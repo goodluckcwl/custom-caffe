@@ -446,15 +446,24 @@ message LayerParameter {
   optional OrdinalRegressionParameter ordinal_regression_loss_param = 230;
   optional ResizeParameter resize_param = 231;
   optional MarginInnerProductParameter margin_inner_product_param = 232;
-  optional WeightEuclideanLossParameter weight_euclidean_loss_param = 233;
-  optional MAELossParameter mae_param = 234;
-  optional SoftmaxWithLossParameter softmax_loss_param = 235;
-  optional ImageFloatDataParameter image_float_data_param = 236;
-  optional VisualParameter visual_param = 237;
-  optional CoordinateROIParameter coordinate_roi_param = 238;
-  optional CoordinateParameter coordinate_param = 239;
-  optional KnowledgeDistillationParameter knowledge_distillation_param = 240;
-  optional LMHeatmapParameter lm_heatmap_param = 241;
+  optional FeatureDecayLossParameter feature_decay_loss_param = 233;
+  optional ConfidencePenaltyLossParameter confidence_penalty_loss_param = 234;
+  optional FocalLossParameter focal_loss_param = 235;
+  optional LabelSpecificMarginParameter label_specific_margin_param = 236;
+  optional ChannelScaleParameter channel_scale_param = 237;
+  optional LabelSpecificAffineParameter label_specific_affine_param = 238;
+  optional LabelSpecificHardMarginParameter label_specific_hard_margin_param = 239;
+  optional LabelSpecificAddParameter label_specific_add_param = 241;
+  // By Weiliang Chen
+  optional WeightEuclideanLossParameter weight_euclidean_loss_param = 242;
+  optional MAELossParameter mae_param = 243;
+  optional SoftmaxWithLossParameter softmax_loss_param = 244;
+  optional ImageFloatDataParameter image_float_data_param = 245;
+  optional VisualParameter visual_param = 246;
+  optional CoordinateROIParameter coordinate_roi_param = 247;
+  optional CoordinateParameter coordinate_param = 248;
+  optional KnowledgeDistillationParameter knowledge_distillation_param = 249;
+  optional LMHeatmapParameter lm_heatmap_param = 250;
 }
 
 // Message that stores parameters used to apply transformation
@@ -1903,6 +1912,94 @@ message MarginInnerProductParameter {
   optional float power = 7 [default = 1];
   optional int32 iteration = 8 [default = 0];
   optional float lambda_min = 9 [default = 0];
+}
+
+message FeatureDecayLossParameter {
+  optional float decay_threshold = 1 [default = 20.0];
+  optional bool force_decay = 2 [default = false];
+}
+
+message ConfidencePenaltyLossParameter{
+  optional float beta = 1 [default = 0.1];
+}
+
+// Focal Loss for Dense Object Detection
+message FocalLossParameter {
+  enum Type {
+    ORIGIN = 0; // FL(p_t)  = -(1 - p_t) ^ gama * log(p_t), where p_t = p if y == 1 else 1 - p, whre p = sigmoid(x)
+    LINEAR = 1; // FL*(p_t) = -log(p_t) / gama, where p_t = sigmoid(gama * x_t + beta), where x_t = x * y, y is the ground truth label {-1, 1}
+    ONEADDP = 2;
+  }
+  optional Type type   = 1 [default = ORIGIN];
+  optional float gamma = 2 [default = 2];
+  // cross-categories weights to solve the imbalance problem
+  optional float alpha = 3 [default = 1.0];
+  optional float beta  = 4 [default = 1.0];
+}
+
+message LabelSpecificMarginParameter {
+  enum MarginType {
+    HARD = 0;
+    SOFT = 1;
+  }
+  optional MarginType type   = 9 [default = HARD];
+  optional float margin_base = 1 [default = 0.0];
+  optional float margin_max = 2 [default = 10.0];
+  optional float power = 3 [default = 1.0];
+  optional float gamma = 4 [default = 1.0];
+  optional int32 iteration = 5 [default = 0];
+  optional bool reset_margin = 6 [default = false];
+  optional bool margin_on_test = 7 [default = false];
+  optional bool auto_tune = 8 [default = false];
+}
+
+message ChannelScaleParameter{
+  optional bool do_forward = 1 [default = true];
+  optional bool do_backward_feature = 2 [default = true];
+  optional bool do_backward_scale = 3 [default = true];
+  optional bool global_scale = 4 [default = false];
+  optional float max_global_scale = 5 [default = 1000.0];
+  optional float min_global_scale = 6 [default = 0.0];
+  optional float init_global_scale = 7 [default = 1.0];
+}
+
+message LabelSpecificAffineParameter {
+  optional float scale_base = 1 [default = 1.0];
+  optional float scale_gamma = 2 [default = 0.0];
+  optional float scale_power = 3 [default = 1.0];
+  optional float scale_max = 4 [default =1.0];
+  optional bool transform_test = 5 [default = false];
+  optional uint32 iteration = 6 [default = 0];
+  optional float bias_base = 7 [default = 0.0];
+  optional float bias_gamma = 8 [default = 0.0];
+  optional float bias_power = 9 [default = 1.0];
+  optional float bias_max = 10 [default =0.0];
+  optional float power_base = 11 [default = 1.0];
+  optional float power_gamma = 12 [default = 0.0];
+  optional float power_power = 13 [default = -1.0];
+  optional float power_min = 14 [default =0.5];
+  optional bool auto_tune = 15 [default = false];
+  optional bool reset = 16 [default = false];
+}
+
+message LabelSpecificHardMarginParameter {
+  optional float positive_weight = 1 [default = 0.5];
+}
+
+message LabelSpecificStatisticsParameter {
+  optional bool scale_for_angle = 1 [default = true];
+  optional float scale_factor = 2 [default = 30.0];
+}
+
+message LabelSpecificAddParameter {
+  optional float bias = 1 [default = 0.0];
+  optional bool transform_test = 2 [default = false];
+  optional float bias_base = 3 [default = 0.0];
+  optional float bias_gamma = 4 [default = 0.0];
+  optional float bias_power = 5 [default = 1.0];
+  optional float bias_min = 6 [default =0.0];
+  optional float bias_max = 7 [default =0.0];
+  optional uint32 iteration = 8 [default = 0];
 }
 
 // Chenweiliang
