@@ -464,6 +464,7 @@ message LayerParameter {
   optional CoordinateParameter coordinate_param = 248;
   optional KnowledgeDistillationParameter knowledge_distillation_param = 249;
   optional LMHeatmapParameter lm_heatmap_param = 250;
+  optional PixelwiseSimilarityParameter pixelwise_similarity_param = 251;
 }
 
 // Message that stores parameters used to apply transformation
@@ -2081,4 +2082,12 @@ message LMHeatmapParameter{
     optional int32 width = 3 [default = 256];
     optional int32 height = 4 [default = 256];
     optional int32 num_pts = 5 [default = 68];
+}
+
+// Chenweiliang
+// This layer is used for calculating pixel-wise similarity of two images.
+// For each pixel in the image, it extract c dim pixel-wise feature from the feature maps
+// of size (n, c, h, w).
+message PixelwiseSimilarityParameter{
+    optional int32 roi = 1 [default = 10]; // Region for calculate pixel-wise similarity
 }

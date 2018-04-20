@@ -110,7 +110,7 @@ void ImageFloatDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bott
     if(!cv_heatmap.data){
           cv_heatmap = cv::Mat(cv_img.rows, cv_img.cols, CV_8UC1);
     }
-    //cv::Mat cv_tmp = cv::Mat(cv_img.rows, cv_img.cols, CV_32SC(4));
+    //cv::Mat cv = cv::Mat(cv_img.rows, cv_img.cols, CV_32SC(4));
     std::vector<cv::Mat> channels;
     cv::split(cv_img, channels);
     channels.push_back(cv_heatmap);
