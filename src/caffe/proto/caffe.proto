@@ -465,6 +465,9 @@ message LayerParameter {
   optional KnowledgeDistillationParameter knowledge_distillation_param = 249;
   optional LMHeatmapParameter lm_heatmap_param = 250;
   optional PixelwiseSimilarityParameter pixelwise_similarity_param = 251;
+  optional NormParameter norm_param = 252;
+  optional MappingBySimilarityParameter mapping_by_similarity_param = 253;
+  optional SwishParameter swish_param = 254;
 }
 
 // Message that stores parameters used to apply transformation
@@ -646,6 +649,15 @@ message ContrastiveLossParameter {
   // legacy_version = true uses (margin - d^2). This is kept to support /
   // reproduce existing models and results
   optional bool legacy_version = 2 [default = false];
+
+  // chenweiliang
+  // 标签种类
+  enum LabelType {
+      SINGLE    = 0; // 单个标签
+      DOUBLE    = 1; // 双标签
+      NONE      = 2; // 没有标签
+  }
+  optional LabelType label_type = 3 [default = SINGLE];
 }
 
 message ConvolutionParameter {
@@ -2036,10 +2048,11 @@ message SoftmaxWithLossParameter{
 // Chenweiliang
 message ImageFloatDataParameter{
   optional bool is_regression = 1 [default = true];
-  optional int32 label_dim = 2 [default = 1];
-  optional bool hard_sample = 3 [default = false];
+  optional int32 label_dim = 2 [default = 1];       // The dim of the label
+  optional bool hard_sample = 3 [default = false];  //
   optional bool with_heatmap = 4 [default = false]; // Add Heatmap Input
   optional string heatmap_dir = 5 [default = "./"];
+
 }
 
 // Chenweiliang
@@ -2052,19 +2065,21 @@ message VisualParameter{
 }
 
 // Chenweiliang
+// 输入特征点位置，在每个特征点生成一个ROI坐标
 message CoordinateROIParameter{
   // Width and height of the roi
   optional int32 roi_width = 1 [default = 10];
   optional int32 roi_height = 2 [default = 10];
 
   enum CoordType{
-    NORM = 0; // Normalized coordinates
-    DIRECT = 1;  // Unnormalized
+    NORM = 0; // 表明输入的是归一化坐标。反归一化得到原始坐标。
+    DIRECT = 1;  // 表明输入的是一维坐标。需变换为2维坐标。
   }
   optional CoordType coord_type = 3 [default = NORM];
 }
 
 // Chenweiliang
+// 把坐标从一维的转化为2维的
 message CoordinateParameter{
   // Normalization Factor
   optional int32 width = 1 [default = 256];
@@ -2090,4 +2105,31 @@ message LMHeatmapParameter{
 // of size (n, c, h, w).
 message PixelwiseSimilarityParameter{
     optional int32 roi = 1 [default = 10]; // Region for calculate pixel-wise similarity
+}
+
+// From caffe-ssd
+message NormParameter{
+  optional bool across_spatial = 1 [default = true];
+  // Initial value of scale. Default is 1.0 for all
+  optional FillerParameter scale_filler = 2;
+  // Whether or not scale parameters are shared across channels.
+  optional bool channel_shared = 3 [default = true];
+  // Epsilon for not dividing by zero while normalizing variance
+  optional float eps = 4 [default = 1e-10];
+}
+
+// Chenweiliang
+message MappingBySimilarityParameter{
+   // alpha is used to control the degree of mapping.
+   // alpha = 0 means no mapping and alpha = 1 means the largest degress of mapping.
+   optional float alpha = 1 [default = 0];
+}
+
+// Message that stores parameters used by SwishLayer
+message SwishParameter {
+  // Beta parameter for the Swish activation function
+  // Described in:
+  // Prajit Ramachandran, Barret Zoph, Quoc V. Le. (2017). Searching for
+  // Activation Functions. https://arxiv.org/abs/1710.05941v2
+  optional float beta = 1 [default = 1];
 }

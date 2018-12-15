@@ -57,8 +57,8 @@ namespace caffe {
       int n_step = top[0]->count(1);
       int c_step = top[0]->count(2);
       // Generate groundtruth probability map
-      int roi_w = roi_ * 2 + 1;
-      int roi_h = roi_ * 2 + 1;
+      //int roi_w = roi_ * 2 + 1;
+      //int roi_h = roi_ * 2 + 1;
       for (int n = 0; n < num_images; ++n) {
           for (int c = 0; c < channels; ++c) {
               Dtype *dst = top_data + n * n_step + c * c_step;
@@ -89,6 +89,13 @@ namespace caffe {
           }
       }
 
+  }
+
+  template <typename Dtype>
+  void LMHeatmapLayer<Dtype>::Backward_cpu(const std::vector<caffe::Blob<Dtype> *> &top,
+                                             const std::vector<bool> &propagate_down,
+                                             const std::vector<caffe::Blob<Dtype> *> &bottom){
+      // Nothing
   }
 
 #ifdef CPU_ONLY

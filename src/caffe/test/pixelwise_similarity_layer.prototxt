@@ -1,0 +1,17 @@
+name: "Test_Pixelwise_Similarity_Layer"
+input: "data"
+input_dim: 4
+input_dim: 64
+input_dim: 16
+input_dim: 16
+force_backward: true
+
+layer {
+  name: "pixel"
+  type: "PixelwiseSimilarity"
+  bottom: "data"
+  top: "pixel"
+  pixelwise_similarity_param{
+    roi: 3
+  }
+}

@@ -35,7 +35,7 @@ namespace caffe {
 
       std::vector<int> top_shape;
       top_shape.push_back(bottom[0]->shape(0) * num_pts_);
-      top_shape.push_back(5);
+      top_shape.push_back(5); // batch_idx, x1,y1,x2,y2
       top[0]->Reshape(top_shape);
       // Bottom[1]: Image blob
       width_ = bottom[1]->shape(3);
@@ -96,7 +96,7 @@ namespace caffe {
   void CoordinateROILayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
                                     const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom) {
 
-    NOT_IMPLEMENTED;
+    //Nothing
   }
 
 

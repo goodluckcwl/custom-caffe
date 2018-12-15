@@ -41,7 +41,7 @@ namespace caffe {
       Dtype* top_data = top[0]->mutable_cpu_data();
       int n = bottom[0]->shape(0);
       int dim = top[0]->shape(1);
-      int w = bottom[0]->shape(1);
+      //int w = bottom[0]->shape(1);
       //
       for (int batch_idx = 0;  batch_idx < n; ++batch_idx) {
 
@@ -62,7 +62,12 @@ namespace caffe {
       }
   }
 
-
+    template <typename Dtype>
+    void CoordinateLayer<Dtype>::Backward_cpu(const std::vector<caffe::Blob<Dtype> *> &top,
+                                              const std::vector<bool> &propagate_down,
+                                              const std::vector<caffe::Blob<Dtype> *> &bottom) {
+      //Nothing
+  }
 
 #ifdef CPU_ONLY
   STUB_GPU(CoordinateLayer);

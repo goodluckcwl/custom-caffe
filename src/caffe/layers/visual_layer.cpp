@@ -69,7 +69,7 @@ void VisualLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
             uchar* im_data = (uchar*)cv_img.data + ind_y * im_cols * height +ind_x * width;
             for (int y = 0; y < height; ++y) {
                 for (int x = 0; x < width; ++x) {
-                    im_data[y * im_cols + x] = (uchar(data[y * width + x] - min_value) / (max_value - min_value) * 255);
+                    im_data[y * im_cols + x] = uchar((data[y * width + x] - min_value) / (max_value - min_value) * 255);
                 }
             }
         }

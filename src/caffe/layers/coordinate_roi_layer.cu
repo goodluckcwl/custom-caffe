@@ -14,7 +14,7 @@ void CoordinateROILayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
 template <typename Dtype>
 void CoordinateROILayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
     const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom) {
-
+    // Nothing
 }
 
 INSTANTIATE_LAYER_GPU_FUNCS(CoordinateROILayer);

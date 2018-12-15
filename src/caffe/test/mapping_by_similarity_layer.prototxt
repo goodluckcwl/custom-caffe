@@ -1,0 +1,39 @@
+name: "Test_Mapping_By_Similarity_Layer"
+input: "input"
+input_dim: 8
+input_dim: 64
+input_dim: 16
+input_dim: 16
+force_backward: true
+
+layer{
+  name: "slice"
+  type: "Slice"
+  bottom: "input"
+  top: "data"
+  top: "sim"
+  slice_param{
+    slice_point: 63 
+    axis:1
+  }
+}
+
+layer{
+  name: "slice2"
+  type: "Slice"
+  bottom: "sim"
+  top: "sim1"
+  top: "sim2"
+  slice_param{
+    slice_point: 4
+    axis: 0
+  }
+}
+
+layer {
+  name: "mapping"
+  type: "MappingBySimilarity"
+  bottom: "data"
+  bottom: "sim1"
+  top: "mapping"
+}

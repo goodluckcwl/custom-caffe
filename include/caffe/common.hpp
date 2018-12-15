@@ -73,6 +73,9 @@ private:\
 namespace cv { class Mat; }
 
 namespace caffe {
+// By Chenweiliang
+#define MAX(x, y) (((x) > (y)) ? (x) : (y))
+#define MIN(x, y) (((x) < (y)) ? (x) : (y))
 
 // We will use the boost shared_ptr instead of the new C++11 one mainly
 // because cuda does not work (at least now) well with C++11 features.

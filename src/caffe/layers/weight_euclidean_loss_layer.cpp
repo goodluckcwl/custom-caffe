@@ -1,4 +1,5 @@
 #include <vector>
+#include <cfloat>
 #include <caffe/caffe.hpp>
 
 #include "caffe/layers/weight_euclidean_loss_layer.hpp"
@@ -77,34 +78,34 @@ void WeightEuclideanLossLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bo
     int N = pupil_dis_.shape(0);
     int M = pupil_dis_.shape(1);
     for (int n = 0; n < N; ++n) {
-        src += M;
+
         for (int i = 0; i < M; ++i) {
             if (normalized_==1){
                 // Inter pupil distance
                 if(normalized_type_ == 0){
-                    float x1 = *(src + left_ind[0]);
-                    float y1 = *(src + M/2 + left_ind[1]);
-                    float x2 = *(src + right_ind[0]);
-                    float y2 = *(src + M/2 + right_ind[1]);
-                    float dis= sqrtf((x1 - x2)*(x1 - x2) + (y1 - y2)*(y1 - y2));
-                    *dst = 1/dis;
+                    Dtype x1 = *(src + left_ind[0]);
+                    Dtype y1 = *(src + M/2 + left_ind[1]);
+                    Dtype x2 = *(src + right_ind[0]);
+                    Dtype y2 = *(src + M/2 + right_ind[1]);
+                    Dtype dis= sqrtf((x1 - x2)*(x1 - x2) + (y1 - y2)*(y1 - y2));
+                    *dst = 1/std::max(dis, Dtype(FLT_MIN));
                 // Bbox
                 }else{
-                    float x1 = 1;
-                    float x2 = 0;
-                    float y1 = 1;
-                    float y2 = 0;
+                    Dtype x1 = 1;
+                    Dtype x2 = 0;
+                    Dtype y1 = 1;
+                    Dtype y2 = 0;
                     for (int j = 0; j < M/2; ++j) {
-                        float pts_x = *(src + j);
-                        float pts_y = *(src + j + M/2);
+                        Dtype pts_x = *(src + j);
+                        Dtype pts_y = *(src + j + M/2);
                         x1 = pts_x < x1 ? pts_x : x1;
                         x2 = pts_x > x2 ? pts_x : x2;
                         y1 = pts_y < y1 ? pts_y : y1;
                         y2 = pts_y > y2 ? pts_y : y2;
                     }
 
-                    float dis = sqrtf((x1 - x2)*(x1 - x2) + (y1 - y2)*(y1 - y2));
-                    *dst = 1/dis;
+                    Dtype dis = sqrtf((x1 - x2)*(x1 - x2) + (y1 - y2)*(y1 - y2));
+                    *dst = 1/std::max(dis, Dtype(FLT_MIN));
                 }
 
             }
@@ -114,6 +115,7 @@ void WeightEuclideanLossLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bo
 
             dst++;
         }
+        src += M;
     }
 
     int count = bottom[0]->count();

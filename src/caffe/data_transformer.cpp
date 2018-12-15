@@ -442,7 +442,8 @@ void DataTransformer<Dtype>::Transform(const cv::Mat& cv_img,
   }
 }
 
-
+// Weiliang Chen:
+// For regression. The image is transformed and the label need to be transformed too.
 template<typename Dtype>
 void DataTransformer<Dtype>::Transform(const cv::Mat& cv_img,
                                        Blob<Dtype>* transformed_blob, std::vector<Dtype> label,

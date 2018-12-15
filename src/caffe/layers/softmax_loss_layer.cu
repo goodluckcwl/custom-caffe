@@ -9,6 +9,7 @@
 #include "thrust/sort.h"
 
 namespace caffe {
+
     template <typename Dtype>
     __global__ void ScaleGPU(const int nthreads, const Dtype alpha, Dtype* X){
         CUDA_KERNEL_LOOP(index, nthreads) {

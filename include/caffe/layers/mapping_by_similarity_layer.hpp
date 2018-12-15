@@ -1,5 +1,5 @@
-#ifndef CAFFE_PIXELWISE_SIMILARITY_LAYER_HPP_
-#define CAFFE_PIXELWISE_SIMILARITY_LAYER_HPP_
+#ifndef CAFFE_MAPPING_BY_SIMILARITY_LAYER_HPP_
+#define CAFFE_MAPPING_BY_SIMILARITY_LAYER_HPP_
 
 #include <vector>
 
@@ -7,52 +7,50 @@
 #include "caffe/layer.hpp"
 #include "caffe/proto/caffe.pb.h"
 
+
 namespace caffe {
 
 /**
- * @brief
+ * @brief MappingBySimilarity @f$ y_1 = (x_1 + (1-\alpha)*x_2)/(2-\alpha),
+ * y_2 = (x_2 + (1-\alpha)*x_1)/(2-\alpha)  @f$.
  *
  */
 template <typename Dtype>
-class PixelwiseSimilarityLayer : public Layer<Dtype> {
+class MappingBySimilarityLayer : public Layer<Dtype> {
  public:
-  /**
-   * @param param provides ReLUParameter relu_param,
-   *     with ReLULayer options:
-   *   - negative_slope (\b optional, default 0).
-   *     the value @f$ \nu @f$ by which negative values are multiplied.
-   */
-  explicit PixelwiseSimilarityLayer(const LayerParameter& param)
+
+  explicit MappingBySimilarityLayer(const LayerParameter& param)
       : Layer<Dtype>(param) {}
     virtual void LayerSetUp(const vector<Blob<Dtype>*>& bottom,
                             const vector<Blob<Dtype>*>& top);
     virtual void Reshape(const vector<Blob<Dtype>*>& bottom,
                          const vector<Blob<Dtype>*>& top);
-  virtual inline const char* type() const { return "PixelwiseSimilarity"; }
-  virtual inline int ExactNumBottomBlobs() const { return 1; }
-  virtual inline int ExactNumTopBlobs() const { return 1; }
+  virtual inline const char* type() const { return "MappingBySimilarity"; }
+    virtual inline int ExactNumBottomBlobs() const { return 2; }
+    virtual inline int ExactNumTopBlobs() const { return 1; }
 
  protected:
-
+   /**
+    *
+    * @param bottom bottom[0] is the input image blob of size (n, c, h, w), which means
+    * it contains n/2 pairs of images exactly.
+    * bottom[1] is the similarity map of size (n/2, 1, h, w).
+    * @param top. The output image blob of size (n, c, h, w).
+    */
   virtual void Forward_cpu(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top);
   virtual void Forward_gpu(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top);
 
+
   virtual void Backward_cpu(const vector<Blob<Dtype>*>& top,
       const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom);
-
   virtual void Backward_gpu(const vector<Blob<Dtype>*>& top,
       const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom);
-
-  // Width and height
-  int width_;
-  int height_;
-  int roi_;
-  Blob<Dtype> im_row_;
-  Blob<Dtype> kernel_row_;
+private:
+    Dtype alpha_;
 };
 
 }  // namespace caffe
 
-#endif  // CAFFE_PIXELWISE_SIMILARITY_LAYER_HPP_
+#endif  // CAFFE_MAPPING_BY_SIMILARITY_LAYER_HPP_
